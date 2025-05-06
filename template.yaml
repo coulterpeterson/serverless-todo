@@ -22,6 +22,12 @@ Resources:
           Properties:
             Path: /tasks
             Method: post
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TasksTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -45,6 +51,12 @@ Resources:
           Properties:
             Path: /tasks/{taskId}
             Method: get
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TasksTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -68,6 +80,12 @@ Resources:
           Properties:
             Path: /tasks/{taskId}
             Method: put
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TasksTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -91,6 +109,12 @@ Resources:
           Properties:
             Path: /tasks/{taskId}
             Method: delete
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+      Policies:
+        - DynamoDBCrudPolicy:
+          TableName: !Ref TasksTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -114,6 +138,12 @@ Resources:
           Properties:
             Path: /tasks
             Method: get
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TasksTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -123,7 +153,18 @@ Resources:
         EntryPoints:
           - src/handlers/listTasks.ts
 
+  TasksTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: taskId
+        Type: String
+      TableName: Tasks
+
 Outputs:
   ApiUrl:
     Description: "API Gateway endpoint URL"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+  TasksTableName:
+    Description: "DynamoDB Table Name"
+    Value: !Ref TasksTable
