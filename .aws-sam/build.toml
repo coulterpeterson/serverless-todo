@@ -5,7 +5,7 @@ codeuri = "/Users/coulterpeterson/code/serverless-todo/dist"
 runtime = "nodejs18.x"
 architecture = "x86_64"
 handler = "handlers/createTask.handler"
-manifest_hash = "9bf191c2fb12e73d0ccacd8a73ade264"
+manifest_hash = "c0ca454b234124ef3a5f48dfdfc46346"
 packagetype = "Zip"
 functions = ["CreateTaskFunction", "GetTaskFunction", "UpdateTaskFunction", "DeleteTaskFunction", "ListTasksFunction"]
 

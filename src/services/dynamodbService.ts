@@ -110,6 +110,22 @@ class DynamoDBService {
         return response.Item as Task | null;
     }
 
+    // Apply updates to a task object without persisting to the database
+    updateTaskLocally(task: Task, updates: TaskUpdate): Task {
+        const now = new Date().toISOString();
+        
+        // Create a new task object with the updates
+        const updatedTask: Task = {
+            ...task,
+            title: updates.title !== undefined ? updates.title : task.title,
+            description: updates.description !== undefined ? updates.description : task.description,
+            status: updates.status !== undefined ? updates.status : task.status,
+            updatedAt: now
+        };
+        
+        return updatedTask;
+    }
+
     async updateTask(taskId: string, updates: TaskUpdate): Promise<Task | null> {
         // Ensure table exists before operations
         await this.ensureTableExists();

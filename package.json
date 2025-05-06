@@ -10,7 +10,7 @@
     "build": "tsc && cp package.json dist/ && cd dist && npm install --production",
     "start-dynamo": "docker run -p 8000:8000 amazon/dynamodb-local",
     "dev": "npm run build && sam build && sam local start-api",
-    "deploy": "npm run build && sam build && sam deploy --guided"
+    "deploy": "npm run build && sam build && sam deploy"
   },
   "repository": {
     "type": "git",

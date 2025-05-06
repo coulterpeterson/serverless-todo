@@ -17,11 +17,12 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        CreateTaskApi:
+        CreateTask:
           Type: Api
           Properties:
+            RestApiId: !Ref TodoApi
             Path: /tasks
-            Method: post
+            Method: POST
       Environment:
         Variables:
           TASKS_TABLE: !Ref TasksTable
@@ -38,11 +39,12 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        GetTaskApi:
+        GetTask:
           Type: Api
           Properties:
+            RestApiId: !Ref TodoApi
             Path: /tasks/{taskId}
-            Method: get
+            Method: GET
       Environment:
         Variables:
           TASKS_TABLE: !Ref TasksTable
@@ -59,11 +61,12 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        UpdateTaskApi:
+        UpdateTask:
           Type: Api
           Properties:
+            RestApiId: !Ref TodoApi
             Path: /tasks/{taskId}
-            Method: put
+            Method: PUT
       Environment:
         Variables:
           TASKS_TABLE: !Ref TasksTable
@@ -80,11 +83,12 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        DeleteTaskApi:
+        DeleteTasks:
           Type: Api
           Properties:
+            RestApiId: !Ref TodoApi
             Path: /tasks/{taskId}
-            Method: delete
+            Method: DELETE
       Environment:
         Variables:
           TASKS_TABLE: !Ref TasksTable
@@ -101,11 +105,12 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        ListTasksApi:
+        ListTasks:
           Type: Api
           Properties:
+            RestApiId: !Ref TodoApi
             Path: /tasks
-            Method: get
+            Method: GET
       Environment:
         Variables:
           TASKS_TABLE: !Ref TasksTable
@@ -121,10 +126,20 @@ Resources:
         Type: String
       TableName: Tasks
 
+  TodoApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'*'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Requested-With'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
+
 Outputs:
   ApiUrl:
     Description: "API Gateway endpoint URL"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+    Value: !Sub "https://${TodoApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
   TasksTableName:
     Description: "DynamoDB Table Name"
     Value: !Ref TasksTable

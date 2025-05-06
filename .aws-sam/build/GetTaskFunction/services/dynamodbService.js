@@ -86,6 +86,19 @@ class DynamoDBService {
         }));
         return response.Item;
     }
+    // Apply updates to a task object without persisting to the database
+    updateTaskLocally(task, updates) {
+        const now = new Date().toISOString();
+        // Create a new task object with the updates
+        const updatedTask = {
+            ...task,
+            title: updates.title !== undefined ? updates.title : task.title,
+            description: updates.description !== undefined ? updates.description : task.description,
+            status: updates.status !== undefined ? updates.status : task.status,
+            updatedAt: now
+        };
+        return updatedTask;
+    }
     async updateTask(taskId, updates) {
         // Ensure table exists before operations
         await this.ensureTableExists();

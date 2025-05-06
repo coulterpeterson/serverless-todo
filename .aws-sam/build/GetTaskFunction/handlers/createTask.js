@@ -3,13 +3,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const dynamodbService_1 = require("../services/dynamodbService");
 const task_1 = require("../models/task");
+const corsHeaders_1 = require("../utils/corsHeaders");
 const handler = async (event) => {
+    // Handle OPTIONS request
+    if (event.httpMethod === 'OPTIONS') {
+        return (0, corsHeaders_1.handleOptions)();
+    }
     try {
         // Validate request body
         if (!event.body) {
             return {
                 statusCode: 400,
-                headers: { 'Content-Type': 'application/json' },
+                headers: corsHeaders_1.corsHeaders,
                 body: JSON.stringify({ message: 'Request body is required' })
             };
         }
@@ -19,7 +24,7 @@ const handler = async (event) => {
         if (!taskInput.title) {
             return {
                 statusCode: 400,
-                headers: { 'Content-Type': 'application/json' },
+                headers: corsHeaders_1.corsHeaders,
                 body: JSON.stringify({ message: 'Title is required' })
             };
         }
@@ -27,7 +32,7 @@ const handler = async (event) => {
         if (!taskInput.status || !task_1.TASK_STATUSES.includes(taskInput.status)) {
             return {
                 statusCode: 400,
-                headers: { 'Content-Type': 'application/json' },
+                headers: corsHeaders_1.corsHeaders,
                 body: JSON.stringify({
                     message: 'Invalid status',
                     validValues: task_1.TASK_STATUSES
@@ -39,7 +44,7 @@ const handler = async (event) => {
         // Return success response
         return {
             statusCode: 201,
-            headers: { 'Content-Type': 'application/json' },
+            headers: corsHeaders_1.corsHeaders,
             body: JSON.stringify(task)
         };
     }
@@ -47,7 +52,7 @@ const handler = async (event) => {
         console.error('Error creating task:', error);
         return {
             statusCode: 500,
-            headers: { 'Content-Type': 'application/json' },
+            headers: corsHeaders_1.corsHeaders,
             body: JSON.stringify({ message: 'Internal server error' })
         };
     }
