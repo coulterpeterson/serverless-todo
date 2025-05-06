@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const dynamodbService_1 = require("../services/dynamodbService");
+const task_1 = require("../models/task");
 const handler = async (event) => {
     try {
         // Validate request body
@@ -22,11 +23,15 @@ const handler = async (event) => {
                 body: JSON.stringify({ message: 'Title is required' })
             };
         }
-        if (!taskInput.status || !['pending', 'in-progress', 'completed'].includes(taskInput.status)) {
+        // Use the centralized TASK_STATUSES array from the model to validate the status
+        if (!taskInput.status || !task_1.TASK_STATUSES.includes(taskInput.status)) {
             return {
                 statusCode: 400,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'Invalid status' })
+                body: JSON.stringify({
+                    message: 'Invalid status',
+                    validValues: task_1.TASK_STATUSES
+                })
             };
         }
         // Create task

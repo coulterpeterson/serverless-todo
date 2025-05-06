@@ -1,0 +1,35 @@
+{
+  "name": "serverless-todo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "build": "tsc && cp package.json dist/ && cd dist && npm install --production",
+    "start-dynamo": "docker run -p 8000:8000 amazon/dynamodb-local",
+    "dev": "npm run build && sam build && sam local start-api",
+    "deploy": "npm run build && sam build && sam deploy --guided"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coulterpeterson/serverless-todo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/coulterpeterson/serverless-todo/issues"
+  },
+  "homepage": "https://github.com/coulterpeterson/serverless-todo#readme",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node": "^22.15.12",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.803.0",
+    "@aws-sdk/lib-dynamodb": "^3.803.0",
+    "uuid": "^11.1.0"
+  }
+}

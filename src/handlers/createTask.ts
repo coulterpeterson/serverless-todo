@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { dynamoDBService } from '../services/dynamodbService';
-import { TaskInput } from '../models/task';
+import { TASK_STATUSES, TaskInput } from '../models/task';
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
@@ -25,11 +25,15 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
             };
         }
 
-        if (!taskInput.status || !['pending', 'in-progress', 'completed'].includes(taskInput.status)) {
+         // Use the centralized TASK_STATUSES array from the model to validate the status
+        if (!taskInput.status || !TASK_STATUSES.includes(taskInput.status)) {
             return {
                 statusCode: 400,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'Invalid status' })
+                body: JSON.stringify({ 
+                    message: 'Invalid status',  
+                    validValues: TASK_STATUSES 
+                })
             };
         }
 

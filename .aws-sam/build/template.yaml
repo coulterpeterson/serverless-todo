@@ -31,6 +31,78 @@ Resources:
             Ref: TasksTable
     Metadata:
       SamResourceId: CreateTaskFunction
+  GetTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: GetTaskFunction
+      Handler: handlers/getTask.handler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      Events:
+        GetTaskApi:
+          Type: Api
+          Properties:
+            Path: /tasks/{taskId}
+            Method: get
+      Environment:
+        Variables:
+          TASKS_TABLE:
+            Ref: TasksTable
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TasksTable
+    Metadata:
+      SamResourceId: GetTaskFunction
+  UpdateTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: UpdateTaskFunction
+      Handler: handlers/updateTask.handler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      Events:
+        UpdateTaskApi:
+          Type: Api
+          Properties:
+            Path: /tasks/{taskId}
+            Method: put
+      Environment:
+        Variables:
+          TASKS_TABLE:
+            Ref: TasksTable
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TasksTable
+    Metadata:
+      SamResourceId: UpdateTaskFunction
+  DeleteTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DeleteTaskFunction
+      Handler: handlers/deleteTask.handler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      Events:
+        DeleteTaskApi:
+          Type: Api
+          Properties:
+            Path: /tasks/{taskId}
+            Method: delete
+      Environment:
+        Variables:
+          TASKS_TABLE:
+            Ref: TasksTable
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TasksTable
+    Metadata:
+      SamResourceId: DeleteTaskFunction
   ListTasksFunction:
     Type: AWS::Serverless::Function
     Properties:

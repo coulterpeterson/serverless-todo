@@ -29,71 +29,68 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref TasksTable
 
-#  GetTaskFunction:
-#    Type: AWS::Serverless::Function
-#    Properties:
-#      CodeUri: ./dist
-#      Handler: handlers/getTask.handler
-#      Runtime: nodejs18.x
-#      Architectures:
-#        - x86_64
-#      Events:
-#        GetTaskApi:
-#          Type: Api
-#          Properties:
-#            Path: /tasks/{taskId}
-#            Method: get
-#      Environment:
-#        Variables:
-#          TASKS_TABLE: !Ref TasksTable
-#      Policies:
-#        - DynamoDBCrudPolicy:
-#            TableName: !Ref TasksTable
+  GetTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: handlers/getTask.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Events:
+        GetTaskApi:
+          Type: Api
+          Properties:
+            Path: /tasks/{taskId}
+            Method: get
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TasksTable
 
-#
-#  UpdateTaskFunction:
-#    Type: AWS::Serverless::Function
-#    Properties:
-#      CodeUri: ./dist
-#      Handler: handlers/updateTask.handler
-#      Runtime: nodejs18.x
-#      Architectures:
-#        - x86_64
-#      Events:
-#        UpdateTaskApi:
-#          Type: Api
-#          Properties:
-#            Path: /tasks/{taskId}
-#            Method: put
-#      Environment:
-#        Variables:
-#          TASKS_TABLE: !Ref TasksTable
-#      Policies:
-#        - DynamoDBCrudPolicy:
-#            TableName: !Ref TasksTable
+  UpdateTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: handlers/updateTask.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Events:
+        UpdateTaskApi:
+          Type: Api
+          Properties:
+            Path: /tasks/{taskId}
+            Method: put
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TasksTable
 
-#
-#  DeleteTaskFunction:
-#    Type: AWS::Serverless::Function
-#    Properties:
-#      CodeUri: ./dist
-#      Handler: handlers/deleteTask.handler
-#      Runtime: nodejs18.x
-#      Architectures:
-#        - x86_64
-#      Events:
-#        DeleteTaskApi:
-#          Type: Api
-#          Properties:
-#            Path: /tasks/{taskId}
-#            Method: delete
-#      Environment:
-#        Variables:
-#          TASKS_TABLE: !Ref TasksTable
-#      Policies:
-#        - DynamoDBCrudPolicy:
-#          TableName: !Ref TasksTable
-
+  DeleteTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: handlers/deleteTask.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Events:
+        DeleteTaskApi:
+          Type: Api
+          Properties:
+            Path: /tasks/{taskId}
+            Method: delete
+      Environment:
+        Variables:
+          TASKS_TABLE: !Ref TasksTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TasksTable
 
   ListTasksFunction:
     Type: AWS::Serverless::Function
