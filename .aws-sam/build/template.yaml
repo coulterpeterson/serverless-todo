@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'serverless-todo
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+Resources:
+  CreateTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: CreateTaskFunction
+      Handler: handlers/createTask.handler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      Events:
+        CreateTaskApi:
+          Type: Api
+          Properties:
+            Path: /tasks
+            Method: post
+      Environment:
+        Variables:
+          TASKS_TABLE:
+            Ref: TasksTable
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TasksTable
+    Metadata:
+      SamResourceId: CreateTaskFunction
+  ListTasksFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ListTasksFunction
+      Handler: handlers/listTasks.handler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      Events:
+        ListTasksApi:
+          Type: Api
+          Properties:
+            Path: /tasks
+            Method: get
+      Environment:
+        Variables:
+          TASKS_TABLE:
+            Ref: TasksTable
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TasksTable
+    Metadata:
+      SamResourceId: ListTasksFunction
+  TasksTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: taskId
+        Type: String
+      TableName: Tasks
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod
+  TasksTableName:
+    Description: DynamoDB Table Name
+    Value:
+      Ref: TasksTable

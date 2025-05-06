@@ -1,26 +1,13 @@
-import { DynamoDBClient, CreateTableCommand } from "@aws-sdk/client-dynamodb";
-import {
-    DynamoDBDocumentClient,
-    PutCommand,
-    GetCommand,
-    UpdateCommand,
-    DeleteCommand,
-    ScanCommand,
-    QueryCommand,
-} from "@aws-sdk/lib-dynamodb";
-import { v4 as uuidv4 } from "uuid";
-import { Task, TaskInput, TaskUpdate } from "../models/task";
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.dynamoDBService = void 0;
+const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
+const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
+const uuid_1 = require("uuid");
 class DynamoDBService {
-    private readonly client: DynamoDBDocumentClient;
-    private readonly ddbClient: DynamoDBClient;
-    private readonly tableName: string;
-    private readonly isLocal: boolean;
-
     constructor() {
         // Check if running locally with SAM
         this.isLocal = process.env.AWS_SAM_LOCAL === 'true';
-        
         // Configure DynamoDB client based on environment
         const options = this.isLocal
             ? {
@@ -32,23 +19,20 @@ class DynamoDBService {
                     accessKeyId: 'dummy',
                     secretAccessKey: 'dummy'
                 }
-            } 
+            }
             : {}; // Use default config in AWS environment
-            
-        this.ddbClient = new DynamoDBClient(options);
-        this.client = DynamoDBDocumentClient.from(this.ddbClient);
+        this.ddbClient = new client_dynamodb_1.DynamoDBClient(options);
+        this.client = lib_dynamodb_1.DynamoDBDocumentClient.from(this.ddbClient);
         this.tableName = process.env.TASKS_TABLE || 'Tasks';
     }
-    
     // This method can be called explicitly before operations
-    async ensureTableExists(): Promise<void> {
-        if (!this.isLocal) return; // Only needed for local dev
-        
+    async ensureTableExists() {
+        if (!this.isLocal)
+            return; // Only needed for local dev
         try {
             console.log(`Checking if table ${this.tableName} exists...`);
-            
             // Try to create the table
-            const createTableCommand = new CreateTableCommand({
+            const createTableCommand = new client_dynamodb_1.CreateTableCommand({
                 TableName: this.tableName,
                 KeySchema: [
                     { AttributeName: 'taskId', KeyType: 'HASH' }
@@ -61,78 +45,65 @@ class DynamoDBService {
                     WriteCapacityUnits: 5
                 }
             });
-            
             await this.ddbClient.send(createTableCommand);
             console.log(`Created table ${this.tableName}`);
-        } catch (err: any) {
+        }
+        catch (err) {
             // Ignore if table already exists
             if (err.name === 'ResourceInUseException') {
                 console.log(`Table ${this.tableName} already exists`);
-            } else {
+            }
+            else {
                 console.warn('Error creating table:', err);
                 // Don't throw - this is a setup operation
             }
         }
     }
-
-    async createTask(taskInput: TaskInput): Promise<Task> {
+    async createTask(taskInput) {
         // Ensure table exists before operations
         await this.ensureTableExists();
-        
         const now = new Date().toISOString();
-
-        const task: Task = {
-            taskId: uuidv4(),
+        const task = {
+            taskId: (0, uuid_1.v4)(),
             title: taskInput.title,
             description: taskInput.description || '',
             status: taskInput.status,
             createdAt: now,
             updatedAt: now,
         };
-
-        await this.client.send(new PutCommand({
+        await this.client.send(new lib_dynamodb_1.PutCommand({
             TableName: this.tableName,
             Item: task
         }));
-
         return task;
     }
-
-    async getTask(taskId: string): Promise<Task | null> {
+    async getTask(taskId) {
         // Ensure table exists before operations
         await this.ensureTableExists();
-        
-        const response = await this.client.send(new GetCommand({
+        const response = await this.client.send(new lib_dynamodb_1.GetCommand({
             TableName: this.tableName,
             Key: { taskId },
         }));
-
-        return response.Item as Task | null;
+        return response.Item;
     }
-
-    async updateTask(taskId: string, updates: TaskUpdate): Promise<Task | null> {
+    async updateTask(taskId, updates) {
         // Ensure table exists before operations
         await this.ensureTableExists();
-        
         const existingTask = await this.getTask(taskId);
         if (!existingTask) {
             return null;
         }
-
         const now = new Date().toISOString();
-        
         // ------------------------------------------------------------
         // Build the update expression dynamically
         // ------------------------------------------------------------
-        const updateExpressions: string[] = [];
-        const expressionAttributeNames: Record<string, string> = {};
-        const expressionAttributeValues: Record<string, any> = {};
-
+        const updateExpressions = [];
+        const expressionAttributeNames = {};
+        const expressionAttributeValues = {};
         // Always update the updatedAt field
         updateExpressions.push('#updatedAt = :updatedAt');
         expressionAttributeNames['#updatedAt'] = 'updatedAt';
         expressionAttributeValues[':updatedAt'] = now;
-
         // ------------------------------------------------------------
         // Add updates for each field if provided:
         // ------------------------------------------------------------
@@ -141,24 +112,20 @@ class DynamoDBService {
             expressionAttributeNames['#title'] = 'title';
             expressionAttributeValues[':title'] = updates.title;
         }
-
         if (updates.description !== undefined) {
             updateExpressions.push('#description = :description');
             expressionAttributeNames['#description'] = 'description';
             expressionAttributeValues[':description'] = updates.description;
         }
-
         if (updates.status !== undefined) {
             updateExpressions.push('#status = :status');
             expressionAttributeNames['#status'] = 'status';
             expressionAttributeValues[':status'] = updates.status;
         }
-
         // ------------------------------------------------------------
         // Build the update command
         // ------------------------------------------------------------
-
-        const response = await this.client.send(new UpdateCommand({
+        const response = await this.client.send(new lib_dynamodb_1.UpdateCommand({
             TableName: this.tableName,
             Key: { taskId },
             UpdateExpression: `SET ${updateExpressions.join(', ')}`,
@@ -166,32 +133,24 @@ class DynamoDBService {
             ExpressionAttributeValues: expressionAttributeValues,
             ReturnValues: 'UPDATED_NEW',
         }));
-
-        return response.Attributes as Task;
+        return response.Attributes;
     }
-
-    async deleteTask(taskId: string): Promise<boolean> {
+    async deleteTask(taskId) {
         // Ensure table exists before operations
         await this.ensureTableExists();
-        
-        await this.client.send(new DeleteCommand({
+        await this.client.send(new lib_dynamodb_1.DeleteCommand({
             TableName: this.tableName,
             Key: { taskId },
         }));
-
         return true;
     }
-
-    async listTasks(): Promise<Task[]> {
+    async listTasks() {
         // Ensure table exists before operations
         await this.ensureTableExists();
-        
-        const response = await this.client.send(new ScanCommand({
+        const response = await this.client.send(new lib_dynamodb_1.ScanCommand({
             TableName: this.tableName,
         }));
-
-        return response.Items as Task[] || [];
+        return response.Items || [];
     }
 }
-
-export const dynamoDBService = new DynamoDBService();
+exports.dynamoDBService = new DynamoDBService();

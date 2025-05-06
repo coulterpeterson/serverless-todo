@@ -93,13 +93,67 @@ Deletes a task by ID.
 ## Prerequisites
 * AWS SAM CLI
 * Node.js 18+
+* TypeScript
+* Docker (for local DynamoDB)
 
-## Running Locally
-* `sam build`
-* `sam local start-api`
-* API available at http://localhost:3000 and can be hit with tools like Postman
+## Project Structure
+This project uses a TypeScript codebase that is compiled to JavaScript before deployment:
+
+* Source TypeScript files in the `src/` directory
+* Compiled JavaScript outputs to the `dist/` directory
+* The build process copies `package.json` to `dist/` and installs dependencies there
+* All dependencies are included directly in the dist folder for Lambda deployment
+
+## Local Development
+
+### Setting up Local DynamoDB
+The application is configured to use a local DynamoDB instance when running with SAM CLI locally.
+
+1. Start a local DynamoDB container:
+```bash
+docker run -p 8000:8000 amazon/dynamodb-local
+```
+
+2. The application will automatically create the required table when run locally.
+
+### Running the API
+Using npm scripts:
+```bash
+npm run dev
+```
+
+Or manually:
+```bash
+# Clean dist directory
+npm run clean
+
+# Compile TypeScript and install dependencies
+npm run build
+
+# Build with SAM
+sam build
+
+# Start local API
+sam local start-api
+```
+
+The API will be available at http://localhost:3000 and can be tested with tools like Postman.
 
 ## Deploy 
-* `sam build`
-* `sam deploy --guided`
+Using npm scripts:
+```bash
+npm run deploy
+```
+
+Or manually:
+```bash
+# Compile TypeScript and install dependencies
+npm run build
+
+# Build with SAM
+sam build
+
+# Deploy to AWS (interactive)
+sam deploy --guided
+```
 

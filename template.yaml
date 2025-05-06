@@ -11,8 +11,8 @@ Resources:
   CreateTaskFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./
-      Handler: src/handlers/createTask.lambdaHandler
+      CodeUri: ./dist
+      Handler: handlers/createTask.handler
       Runtime: nodejs18.x
       Architectures:
         - x86_64
@@ -28,107 +28,78 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref TasksTable
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        EntryPoints:
-          - src/handlers/createTask.ts
 
-  GetTaskFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./
-      Handler: src/handlers/getTask.lambdaHandler
-      Runtime: nodejs18.x
-      Architectures:
-        - x86_64
-      Events:
-        GetTaskApi:
-          Type: Api
-          Properties:
-            Path: /tasks/{taskId}
-            Method: get
-      Environment:
-        Variables:
-          TASKS_TABLE: !Ref TasksTable
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref TasksTable
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        EntryPoints:
-          - src/handlers/getTask.ts
+#  GetTaskFunction:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      CodeUri: ./dist
+#      Handler: handlers/getTask.handler
+#      Runtime: nodejs18.x
+#      Architectures:
+#        - x86_64
+#      Events:
+#        GetTaskApi:
+#          Type: Api
+#          Properties:
+#            Path: /tasks/{taskId}
+#            Method: get
+#      Environment:
+#        Variables:
+#          TASKS_TABLE: !Ref TasksTable
+#      Policies:
+#        - DynamoDBCrudPolicy:
+#            TableName: !Ref TasksTable
 
-  UpdateTaskFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./
-      Handler: src/handlers/updateTask.lambdaHandler
-      Runtime: nodejs18.x
-      Architectures:
-        - x86_64
-      Events:
-        UpdateTaskApi:
-          Type: Api
-          Properties:
-            Path: /tasks/{taskId}
-            Method: put
-      Environment:
-        Variables:
-          TASKS_TABLE: !Ref TasksTable
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref TasksTable
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        EntryPoints:
-          - src/handlers/updateTask.ts
+#
+#  UpdateTaskFunction:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      CodeUri: ./dist
+#      Handler: handlers/updateTask.handler
+#      Runtime: nodejs18.x
+#      Architectures:
+#        - x86_64
+#      Events:
+#        UpdateTaskApi:
+#          Type: Api
+#          Properties:
+#            Path: /tasks/{taskId}
+#            Method: put
+#      Environment:
+#        Variables:
+#          TASKS_TABLE: !Ref TasksTable
+#      Policies:
+#        - DynamoDBCrudPolicy:
+#            TableName: !Ref TasksTable
 
-  DeleteTaskFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./
-      Handler: src/handlers/deleteTask.lambdaHandler
-      Runtime: nodejs18.x
-      Architectures:
-        - x86_64
-      Events:
-        DeleteTaskApi:
-          Type: Api
-          Properties:
-            Path: /tasks/{taskId}
-            Method: delete
-      Environment:
-        Variables:
-          TASKS_TABLE: !Ref TasksTable
-      Policies:
-        - DynamoDBCrudPolicy:
-          TableName: !Ref TasksTable
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        EntryPoints:
-          - src/handlers/deleteTask.ts
+#
+#  DeleteTaskFunction:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      CodeUri: ./dist
+#      Handler: handlers/deleteTask.handler
+#      Runtime: nodejs18.x
+#      Architectures:
+#        - x86_64
+#      Events:
+#        DeleteTaskApi:
+#          Type: Api
+#          Properties:
+#            Path: /tasks/{taskId}
+#            Method: delete
+#      Environment:
+#        Variables:
+#          TASKS_TABLE: !Ref TasksTable
+#      Policies:
+#        - DynamoDBCrudPolicy:
+#          TableName: !Ref TasksTable
+
 
   ListTasksFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./
-      Handler: src/handlers/listTasks.lambdaHandler
+      CodeUri: ./dist
+      Handler: handlers/listTasks.handler
       Runtime: nodejs18.x
       Architectures:
         - x86_64
@@ -144,14 +115,6 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref TasksTable
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        EntryPoints:
-          - src/handlers/listTasks.ts
 
   TasksTable:
     Type: AWS::Serverless::SimpleTable
